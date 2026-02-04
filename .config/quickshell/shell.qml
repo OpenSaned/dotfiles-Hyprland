@@ -40,9 +40,8 @@ ShellRoot {
 
         Rectangle {
             anchors.fill: parent
-            color: "#101219"
+            color: "#B3101219"
             radius: 20
-            opacity: 0.95
 
             ColumnLayout {
                 anchors.fill: parent
@@ -673,7 +672,7 @@ ShellRoot {
             anchors.centerIn: parent
             width: 400
             height: 180
-            color: "#101219"
+            color: "#B3101219"
             radius: 15
             opacity: 0.95
 

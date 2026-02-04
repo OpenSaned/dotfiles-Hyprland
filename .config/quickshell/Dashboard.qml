@@ -31,7 +31,6 @@ PanelWindow {
         radius: 20
         clip: true
 
-        // Background image with blur
         Image {
             id: bgImage
             anchors.fill: parent
@@ -48,26 +47,22 @@ PanelWindow {
             blur: 1.0
         }
 
-        // Dark overlay
         Rectangle {
             anchors.fill: parent
             color: Qt.rgba(0, 0, 0, 0.6)
             radius: 20
         }
 
-        // Main content
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 20
             spacing: 15
 
-            // Profile Section
             ProfileSection {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 120
             }
 
-            // Power buttons row
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
@@ -86,7 +81,6 @@ PanelWindow {
                 }
             }
 
-            // System Stats
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 280
@@ -130,7 +124,6 @@ PanelWindow {
                         Layout.fillWidth: true
                     }
 
-                    // Volume slider
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
@@ -164,7 +157,6 @@ PanelWindow {
                         }
                     }
 
-                    // Brightness slider
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
@@ -200,7 +192,6 @@ PanelWindow {
                 }
             }
 
-            // Calendar
             CalendarWidget {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -208,7 +199,6 @@ PanelWindow {
         }
     }
 
-    // Data providers
     Process {
         id: cpuProcess
         command: ["bash", "-c", "top -bn1 | grep 'Cpu(s)' | awk '{print int($2)}'"]

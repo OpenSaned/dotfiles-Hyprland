@@ -1,5 +1,3 @@
-//there are some problems with the timing and stuff. i use firefox so i think its a MPRIS issue. if you find a fix please let me know.
-
 import Quickshell
 import Quickshell.Services.Mpris
 import QtQuick
@@ -10,14 +8,52 @@ ShellRoot {
 
     property bool musicVisible: false
     property real trackedPosition: 0
-    property bool wasPlaying: false
+    property var player: null
 
     MprisWatcher {
         id: mprisWatcher
     }
 
-    property var player: mprisWatcher.players.values[0] ?? null
     property bool isActuallyPlaying: (root.player?.isPlaying ?? false) && (root.player?.playbackState === MprisPlaybackState.Playing)
+
+    function updateActivePlayer() {
+        var playing = null
+        var paused = null
+        
+        for (var i = 0; i < mprisWatcher.players.values.length; i++) {
+            var p = mprisWatcher.players.values[i]
+            if (p.playbackState === MprisPlaybackState.Playing) {
+                playing = p
+                break
+            } else if (p.playbackState === MprisPlaybackState.Paused && !paused) {
+                paused = p
+            }
+        }
+        
+        var newPlayer = playing ?? paused ?? mprisWatcher.players.values[0] ?? null
+        
+        if (newPlayer !== root.player) {
+            root.trackedPosition = newPlayer?.position ?? 0
+        }
+        
+        root.player = newPlayer
+    }
+
+    Connections {
+        target: mprisWatcher
+        function onPlayersChanged() {
+            updateActivePlayer()
+        }
+    }
+
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: updateActivePlayer()
+    }
+
+    Component.onCompleted: updateActivePlayer()
 
     Timer {
         id: positionTimer
@@ -34,7 +70,7 @@ ShellRoot {
 
     Timer {
         id: syncTimer
-        interval: 5000
+        interval: 2000
         running: root.musicVisible && root.isActuallyPlaying
         repeat: true
         triggeredOnStart: true
