@@ -3,12 +3,14 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import Qt5Compat.GraphicalEffects
 
 ShellRoot {
     id: root
 
     property bool dashboardVisible: false
     property bool musicVisible: false
+    property var pfpFiles: []
 
     PanelWindow {
         id: dashboard
@@ -49,51 +51,252 @@ ShellRoot {
                 spacing: 15
 
                 Rectangle {
+                    id: profileSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 100
+                    Layout.preferredHeight: pfpPickerOpen ? 280 : 100
                     color: Qt.rgba(0, 0, 0, 0.3)
                     radius: 15
+                    clip: true
 
-                    RowLayout {
+                    property bool pfpPickerOpen: false
+
+                    Behavior on Layout.preferredHeight {
+                        NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                    }
+
+                    ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 15
                         spacing: 15
 
-                        Rectangle {
-                            width: 74
-                            height: 74
-                            radius: 37
-                            color: "#D9C7A9"
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 15
 
-                            Image {
-                                anchors.centerIn: parent
-                                width: 68
-                                height: 68
-                                source: "file:///home/harman/.config/quickshell/pfp_circle.png"
-                                fillMode: Image.PreserveAspectFit
-                                smooth: true
+                            Item {
+                                id: pfpContainer
+                                width: 74
+                                height: 74
+
+                                Rectangle {
+                                    id: pfpBorder
+                                    anchors.fill: parent
+                                    radius: 37
+                                    color: "transparent"
+                                    border.width: 3
+                                    border.color: "#D9C7A9"
+                                }
+
+                                Image {
+                                    id: pfpImage
+                                    anchors.centerIn: parent
+                                    width: 68
+                                    height: 68
+                                    source: "file:///home/harman/.config/quickshell/assets/pfps/pfp.jpg"
+                                    fillMode: Image.PreserveAspectCrop
+                                    smooth: true
+                                    cache: false
+                                    sourceSize.width: 256
+                                    sourceSize.height: 256
+                                    visible: false
+                                    
+                                    property int reloadTrigger: 0
+                                    
+                                    function reload() {
+                                        reloadTrigger++
+                                        source = ""
+                                        source = "file:///home/harman/.config/quickshell/assets/pfps/pfp.jpg?" + reloadTrigger
+                                    }
+                                }
+
+                                Rectangle {
+                                    id: pfpMask
+                                    anchors.centerIn: parent
+                                    width: 68
+                                    height: 68
+                                    radius: 34
+                                    visible: false
+                                }
+
+                                OpacityMask {
+                                    anchors.centerIn: parent
+                                    width: 68
+                                    height: 68
+                                    source: pfpImage
+                                    maskSource: pfpMask
+                                }
+
+                                Rectangle {
+                                    anchors.right: parent.right
+                                    anchors.bottom: parent.bottom
+                                    width: 22
+                                    height: 22
+                                    radius: 11
+                                    color: "#D9C7A9"
+                                    border.width: 2
+                                    border.color: "#101219"
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "󰏫"
+                                        color: "#101219"
+                                        font.pixelSize: 12
+                                        font.family: "JetBrainsMono Nerd Font"
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        profileSection.pfpPickerOpen = !profileSection.pfpPickerOpen
+                                        if (profileSection.pfpPickerOpen) {
+                                            root.pfpFiles = []
+                                            pfpListProc.running = true
+                                        }
+                                    }
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 5
+
+                                Text {
+                                    text: "Harman"
+                                    color: "#D9C7A9"
+                                    font.pixelSize: 26
+                                    font.bold: true
+                                    font.family: "JetBrainsMono Nerd Font"
+                                }
+
+                                Text {
+                                    id: uptimeText
+                                    text: "up ..."
+                                    color: "#e5e5de"
+                                    font.pixelSize: 12
+                                    font.family: "JetBrainsMono Nerd Font"
+                                }
                             }
                         }
 
-                        ColumnLayout {
+                        Rectangle {
                             Layout.fillWidth: true
-                            spacing: 5
+                            Layout.fillHeight: true
+                            color: Qt.rgba(0, 0, 0, 0.3)
+                            radius: 10
+                            visible: profileSection.pfpPickerOpen
 
-                            Text {
-                                text: "Harman" //change this to your name
-                                color: "#D9C7A9"
-                                font.pixelSize: 26
-                                font.bold: true
-                                font.family: "JetBrainsMono Nerd Font"
-                            }
+                            ColumnLayout {
+                                anchors.fill: parent
+                                anchors.margins: 10
+                                spacing: 8
 
-                            Text {
-                                id: uptimeText
-                                text: "up ..."
-                                color: "#e5e5de"
-                                font.pixelSize: 12
-                                font.family: "JetBrainsMono Nerd Font"
+                                Text {
+                                    text: "Choose Avatar"
+                                    color: "#D9C7A9"
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                    font.family: "JetBrainsMono Nerd Font"
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+
+                                GridLayout {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    Layout.alignment: Qt.AlignHCenter
+                                    columns: 6
+                                    rowSpacing: 8
+                                    columnSpacing: 8
+
+                                    Repeater {
+                                        model: root.pfpFiles
+
+                                        Item {
+                                            width: 48
+                                            height: 48
+
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                radius: 24
+                                                color: "transparent"
+                                                border.width: 2
+                                                border.color: thumbMa.containsMouse ? "#E4CDAA" : "#D9C7A9"
+
+                                                Behavior on border.color {
+                                                    ColorAnimation { duration: 150 }
+                                                }
+                                            }
+
+                                            Image {
+                                                id: thumbImg
+                                                anchors.centerIn: parent
+                                                width: 44
+                                                height: 44
+                                                source: "file://" + modelData
+                                                fillMode: Image.PreserveAspectCrop
+                                                smooth: true
+                                                sourceSize.width: 128
+                                                sourceSize.height: 128
+                                                visible: false
+                                            }
+
+                                            Rectangle {
+                                                id: thumbMask
+                                                anchors.centerIn: parent
+                                                width: 44
+                                                height: 44
+                                                radius: 22
+                                                visible: false
+                                            }
+
+                                            OpacityMask {
+                                                anchors.centerIn: parent
+                                                width: 44
+                                                height: 44
+                                                source: thumbImg
+                                                maskSource: thumbMask
+                                            }
+
+                                            MouseArea {
+                                                id: thumbMa
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: {
+                                                    setPfpProc.selFile = modelData
+                                                    setPfpProc.running = true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                        }
+                    }
+
+                    Process {
+                        id: pfpListProc
+                        command: ["bash", "-c", "find /home/harman/.config/quickshell/assets/pfps -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.png' -o -iname '*.gif' \\) ! -name 'pfp.jpg' | sort"]
+                        stdout: SplitParser {
+                            onRead: data => {
+                                var file = data.trim()
+                                if (file.length > 0) {
+                                    var current = root.pfpFiles.slice()
+                                    current.push(file)
+                                    root.pfpFiles = current
+                                }
+                            }
+                        }
+                    }
+
+                    Process {
+                        id: setPfpProc
+                        property string selFile: ""
+                        command: ["bash", "-c", "cp '" + selFile + "' /home/harman/.config/quickshell/assets/pfps/pfp.jpg"]
+                        onExited: {
+                            pfpImage.reload()
+                            profileSection.pfpPickerOpen = false
                         }
                     }
                 }
