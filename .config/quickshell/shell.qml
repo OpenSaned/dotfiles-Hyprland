@@ -3,6 +3,7 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 
 ShellRoot {
@@ -201,71 +202,83 @@ ShellRoot {
                                     Layout.alignment: Qt.AlignHCenter
                                 }
 
-                                GridLayout {
+                                Flickable {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignHCenter
-                                    columns: 6
-                                    rowSpacing: 8
-                                    columnSpacing: 8
+                                    contentWidth: width
+                                    contentHeight: pfpGrid.height
+                                    clip: true
 
-                                    Repeater {
-                                        model: root.pfpFiles
+                                    ScrollBar.vertical: ScrollBar {
+                                        policy: ScrollBar.AsNeeded
+                                    }
 
-                                        Item {
-                                            width: 48
-                                            height: 48
+                                    GridLayout {
+                                        id: pfpGrid
+                                        width: parent.width
+                                        columns: 6
+                                        rowSpacing: 8
+                                        columnSpacing: 8
 
-                                            Rectangle {
-                                                anchors.fill: parent
-                                                radius: 24
-                                                color: "transparent"
-                                                border.width: 2
-                                                border.color: thumbMa.containsMouse ? "#E4CDAA" : "#D9C7A9"
+                                        Repeater {
+                                            model: root.pfpFiles
 
-                                                Behavior on border.color {
-                                                    ColorAnimation { duration: 150 }
+                                            Item {
+                                                width: 48
+                                                height: 48
+                                                Layout.alignment: Qt.AlignHCenter
+
+                                                Rectangle {
+                                                    anchors.fill: parent
+                                                    radius: 24
+                                                    color: "transparent"
+                                                    border.width: 2
+                                                    border.color: thumbMa.containsMouse ? "#E4CDAA" : "#D9C7A9"
+
+                                                    Behavior on border.color {
+                                                        ColorAnimation { duration: 150 }
+                                                    }
                                                 }
-                                            }
 
-                                            Image {
-                                                id: thumbImg
-                                                anchors.centerIn: parent
-                                                width: 44
-                                                height: 44
-                                                source: "file://" + modelData
-                                                fillMode: Image.PreserveAspectCrop
-                                                smooth: true
-                                                sourceSize.width: 128
-                                                sourceSize.height: 128
-                                                visible: false
-                                            }
+                                                Image {
+                                                    id: thumbImg
+                                                    anchors.centerIn: parent
+                                                    width: 44
+                                                    height: 44
+                                                    source: "file://" + modelData
+                                                    fillMode: Image.PreserveAspectCrop
+                                                    smooth: true
+                                                    sourceSize.width: 128
+                                                    sourceSize.height: 128
+                                                    visible: false
+                                                }
 
-                                            Rectangle {
-                                                id: thumbMask
-                                                anchors.centerIn: parent
-                                                width: 44
-                                                height: 44
-                                                radius: 22
-                                                visible: false
-                                            }
+                                                Rectangle {
+                                                    id: thumbMask
+                                                    anchors.centerIn: parent
+                                                    width: 44
+                                                    height: 44
+                                                    radius: 22
+                                                    visible: false
+                                                }
 
-                                            OpacityMask {
-                                                anchors.centerIn: parent
-                                                width: 44
-                                                height: 44
-                                                source: thumbImg
-                                                maskSource: thumbMask
-                                            }
+                                                OpacityMask {
+                                                    anchors.centerIn: parent
+                                                    width: 44
+                                                    height: 44
+                                                    source: thumbImg
+                                                    maskSource: thumbMask
+                                                }
 
-                                            MouseArea {
-                                                id: thumbMa
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                cursorShape: Qt.PointingHandCursor
-                                                onClicked: {
-                                                    setPfpProc.selFile = modelData
-                                                    setPfpProc.running = true
+                                                MouseArea {
+                                                    id: thumbMa
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: {
+                                                        setPfpProc.selFile = modelData
+                                                        setPfpProc.running = true
+                                                    }
                                                 }
                                             }
                                         }
