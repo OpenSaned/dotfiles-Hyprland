@@ -18,7 +18,5 @@
 ![](./screenshots/2.png)
 ![](./screenshots/3.png)
 
-Inspired by: ViegPhunt, binnewbs, Mon4sm, r/unixporn
-
 
 ### THANKS FOR READING :)
