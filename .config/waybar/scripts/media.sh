@@ -10,7 +10,7 @@ if [ "$status" = "Playing" ] || [ "$status" = "Paused" ]; then
         text="$artist - $title"
         if [ ${#text} -gt 45 ]; then
             text="${text:0:42}..."
-        fi
+        fiQ
         
         if [ "$status" = "Playing" ]; then
             echo "{\"text\":\"󰎆 $text\", \"class\":\"playing\"}"

@@ -21,13 +21,14 @@ tooltip {
     border-radius: 12px;
 }
 
+#custom-apps,
 #clock,
 #workspaces,
 #custom-media,
 #battery,
 #custom-volume,
 #custom-network,
-#custom-notification {
+#custom-dashboard {
     background: alpha(@background, 0.75);
     border-radius: 16px;
     padding: 3px 12px;
@@ -35,12 +36,24 @@ tooltip {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+#custom-apps:hover,
 #clock:hover,
 #custom-media:hover,
 #battery:hover,
 #custom-volume:hover,
-#custom-network:hover {
+#custom-dashboard:hover {
     background: alpha(@background, 0.95);
+}
+
+#custom-apps {
+    color: @red;
+    font-size: 20px;
+
+}
+
+#custom-apps:hover {
+    background: alpha(@background, 0.95);
+    border-radius: 16px;
 }
 
 #clock {
@@ -107,13 +120,13 @@ tooltip {
     color: @foreground;
 }
 
-#custom-notification {
+#custom-dashboard {
     color: @red;
     font-size: 20px;
     transition: all 0.3s ease;
 }
 
-#custom-notification:hover {
+#custom-dashboard:hover {
     background: alpha(@background, 0.95);
     border-radius: 16px;
 }

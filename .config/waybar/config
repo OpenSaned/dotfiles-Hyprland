@@ -4,14 +4,21 @@
     "height": 16,
     "margin": "2 8 0 8",
     "spacing": 6,
-    
-    "modules-left": ["clock", "hyprland/workspaces"],
+
+    "modules-left": ["custom/apps", "clock", "hyprland/workspaces"],
     "modules-center": ["custom/media"],
-    "modules-right": ["battery", "custom/volume", "custom/network", "custom/notification"],
+    "modules-right": ["battery", "custom/volume", "custom/network", "custom/dashboard"],
+
+    "custom/apps": {
+        "format": "",
+        "on-click": "qs ipc call launcher toggle",
+        "on-click-right": "qs ipc call wallpaper toggle",
+        "tooltip": false
+    },
 
     "clock": {
         "format": "󰥔 {:%I:%M %p}",
-        "interval": 60,
+        "interval": 60
     },
 
     "hyprland/workspaces": {
@@ -45,15 +52,14 @@
     "custom/network": {
         "exec": "~/.config/waybar/scripts/network.sh",
         "interval": 5,
-        "on-click": "eww open bluetooth --toggle",
-        "on-click-right": "eww open wifi --toggle",
+        "on-click": "qs ipc call wifi toggle",
+        "on-click-right": "qs ipc call bluetooth toggle",
         "tooltip": false
     },
 
-    "custom/notification": {
+    "custom/dashboard": {
         "format": "󰍜",
         "on-click": "qs ipc call dashboard toggle",
-
         "tooltip": false
     }
 }
