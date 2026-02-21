@@ -154,7 +154,7 @@ ShellRoot {
         for (var key in usage) updated[key] = usage[key]
         updated[app.name] = (updated[app.name] || 0) + 1
         appUsage = updated
-        saveUsageProc.command = ["bash", "-c", "echo '" + JSON.stringify(updated) + "' > /home/harman/.config/quickshell/app_usage.json"]
+        saveUsageProc.command = ["bash", "-c", "echo '" + JSON.stringify(updated) + "' > ~/.config/quickshell/app_usage.json"]
         saveUsageProc.running = true
         root.launcherVisible = false
         searchInput.text = ""
@@ -246,7 +246,7 @@ ShellRoot {
 
     Process {
         id: walColorsProc
-        command: ["bash", "-c", "cat /home/harman/.cache/wal/colors.json"]
+        command: ["bash", "-c", "cat ~/.cache/wal/colors.json"]
         stdout: SplitParser {
             splitMarker: ""
             onRead: data => {
@@ -304,7 +304,7 @@ ShellRoot {
 
     Process {
         id: loadUsageProc
-        command: ["bash", "-c", "cat /home/harman/.config/quickshell/app_usage.json 2>/dev/null || echo '{}'"]
+        command: ["bash", "-c", "cat ~/.config/quickshell/app_usage.json 2>/dev/null || echo '{}'"]
         stdout: SplitParser {
             splitMarker: ""
             onRead: data => {
@@ -318,7 +318,7 @@ ShellRoot {
     Process {
         id: appListProc
         command: ["bash", "-c", String.raw`
-            for f in /usr/share/applications/*.desktop /home/harman/.local/share/applications/*.desktop; do
+            for f in /usr/share/applications/*.desktop ~/.local/share/applications/*.desktop; do
                 [ -f "$f" ] || continue
                 nodisplay=$(grep -i '^NoDisplay=true' "$f")
                 [ -n "$nodisplay" ] && continue
@@ -590,7 +590,7 @@ ShellRoot {
                                     anchors.centerIn: parent
                                     width: 68
                                     height: 68
-                                    source: "file:///home/harman/.config/quickshell/assets/pfps/pfp.jpg"
+                                    source: Qt.resolveUrl("assets/pfps/pfp.jpg")
                                     fillMode: Image.PreserveAspectCrop
                                     smooth: true
                                     cache: false
@@ -601,7 +601,7 @@ ShellRoot {
                                     function reload() {
                                         reloadTrigger++
                                         source = ""
-                                        source = "file:///home/harman/.config/quickshell/assets/pfps/pfp.jpg?" + reloadTrigger
+                                        source = Qt.resolveUrl("assets/pfps/pfp.jpg?" + reloadTrigger)
                                     }
                                 }
                                 Rectangle {
@@ -758,7 +758,7 @@ ShellRoot {
                     }
                     Process {
                         id: pfpListProc
-                        command: ["bash", "-c", "find /home/harman/.config/quickshell/assets/pfps -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.png' -o -iname '*.gif' \\) ! -name 'pfp.jpg' | sort"]
+                        command: ["bash", "-c", "find ~/.config/quickshell/assets/pfps -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.png' -o -iname '*.gif' \\) ! -name 'pfp.jpg' | sort"]
                         stdout: SplitParser {
                             onRead: data => {
                                 var file = data.trim()
@@ -773,7 +773,7 @@ ShellRoot {
                     Process {
                         id: setPfpProc
                         property string selFile: ""
-                        command: ["bash", "-c", "cp '" + selFile + "' /home/harman/.config/quickshell/assets/pfps/pfp.jpg"]
+                        command: ["bash", "-c", "cp '" + selFile + "' ~/.config/quickshell/assets/pfps/pfp.jpg"]
                         onExited: {
                             pfpImage.reload()
                             profileSection.pfpPickerOpen = false
@@ -1390,7 +1390,7 @@ ShellRoot {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: 270
                         height: 182
-                        source: "file:///home/harman/.config/quickshell/assets/honeypie.gif"
+                        source: Qt.resolveUrl("assets/honeypie.gif")
                         fillMode: Image.PreserveAspectFit
                         smooth: true
                         playing: musicPanel.playerStatus === "Playing"
@@ -2590,7 +2590,7 @@ ShellRoot {
                                                 Image {
                                                     id: wallThumbImage
                                                     anchors.fill: parent
-                                                    source: root.thumbsReady ? "file:///home/harman/.cache/wallpaper-thumbs/" + wallThumbImage.thumbHash + ".jpg" : ""
+                                                    source: root.thumbsReady ? Quickshell.env("HOME") + "/.cache/wallpaper-thumbs/" + wallThumbImage.thumbHash + ".jpg" : ""
                                                     fillMode: Image.PreserveAspectCrop
                                                     smooth: false
                                                     asynchronous: true
