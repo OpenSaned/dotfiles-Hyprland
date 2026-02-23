@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 [[ ! -d .config ]] && echo "cant find .config" && exit 1
 
 if [[ "$1" == "deps" ]]; then
-  sudo pacman -S --needed hyprland hyprlock hypridle kitty thunar waybar swww swaync cava fastfetch starship python-pywal kdeconnect grim slurp mpd mpc gnuplot ttf-jetbrains-mono-nerd || exit 1
+  sudo pacman -S --needed hyprland hyprlock hypridle kitty thunar waybar swww swaync cava fastfetch starship python-pywal kdeconnect grim slurp mpd mpc gnuplot ttf-jetbrains-mono-nerd alsa-utils networkmanager bluez bluez-utils wireplumber brightnessctl playerctl imagemagick || exit 1
   
   if command -v yay &>/dev/null; then
     yay -S --needed gpu-screen-recorder rmpc mpd-mpris quickshell-git
@@ -15,6 +15,10 @@ if [[ "$1" == "deps" ]]; then
   else
     echo "install yay or paru first"
   fi
+  
+  sudo systemctl enable --now NetworkManager
+  sudo systemctl enable --now bluetooth
+  
   exit
 fi
 
