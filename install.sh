@@ -1,67 +1,52 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
 
-REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_SRC="$REPO_ROOT/.config"
+cd "$(dirname "$0")"
 
-if [[ ! -d "$CONFIG_SRC" ]]; then
-  echo "Could not find .config in $REPO_ROOT"
-  exit 1
-fi
+[[ ! -f /etc/arch-release ]] && echo "this is for arch btw" && exit 1
+[[ ! -d .config ]] && echo "cant find .config" && exit 1
 
-BACKUP_ROOT="$HOME/.config/dotfiles-hyprland-backups"
-STAMP="$(date +%Y%m%d-%H%M%S)"
-BACKUP_DIR="$BACKUP_ROOT/$STAMP"
-mkdir -p "$BACKUP_DIR"
-mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/wallpapers"
-
-backup_path() {
-  local target="$1"
-  if [[ -e "$target" || -L "$target" ]]; then
-    local rel="${target#$HOME/}"
-    mkdir -p "$BACKUP_DIR/$(dirname "$rel")"
-    mv "$target" "$BACKUP_DIR/$rel"
-    echo "Backed up $target -> $BACKUP_DIR/$rel"
+if [[ "$1" == "deps" ]]; then
+  sudo pacman -S --needed hyprland hyprlock hypridle kitty thunar waybar swww swaync cava fastfetch starship python-pywal kdeconnect grim slurp mpd mpc gnuplot ttf-jetbrains-mono-nerd || exit 1
+  
+  if command -v yay &>/dev/null; then
+    yay -S --needed gpu-screen-recorder rmpc mpd-mpris quickshell-git
+  elif command -v paru &>/dev/null; then
+    paru -S --needed gpu-screen-recorder rmpc mpd-mpris quickshell-git
+  else
+    echo "install yay or paru first"
   fi
-}
-
-copy_item() {
-  local src="$1"
-  local dst="$2"
-  backup_path "$dst"
-  cp -a "$src" "$dst"
-  echo "Installed $dst"
-}
-
-copy_item "$CONFIG_SRC/hypr" "$HOME/.config/hypr"
-copy_item "$CONFIG_SRC/kitty" "$HOME/.config/kitty"
-copy_item "$CONFIG_SRC/waybar" "$HOME/.config/waybar"
-copy_item "$CONFIG_SRC/quickshell" "$HOME/.config/quickshell"
-copy_item "$CONFIG_SRC/swaync" "$HOME/.config/swaync"
-copy_item "$CONFIG_SRC/scripts" "$HOME/.config/scripts"
-copy_item "$CONFIG_SRC/wal" "$HOME/.config/wal"
-copy_item "$CONFIG_SRC/templates" "$HOME/.config/templates"
-copy_item "$CONFIG_SRC/fastfetch" "$HOME/.config/fastfetch"
-copy_item "$CONFIG_SRC/cava" "$HOME/.config/cava"
-copy_item "$CONFIG_SRC/starship.toml" "$HOME/.config/starship.toml"
-
-if [[ -d "$REPO_ROOT/wallpapers" ]]; then
-  cp -an "$REPO_ROOT/wallpapers/." "$HOME/wallpapers/"
-  echo "Synced wallpapers into $HOME/wallpapers"
+  exit
 fi
 
-cat > "$HOME/.local/bin/start-quickshell.sh" <<'LAUNCH'
-#!/usr/bin/env bash
-pkill quickshell 2>/dev/null || true
-nohup quickshell >/dev/null 2>&1 &
-LAUNCH
-chmod +x "$HOME/.local/bin/start-quickshell.sh"
+echo "this will overwrite your hypr/kitty/waybar configs"
+read -p "continue? [y/n] " -n 1 -r
+echo
+[[ ! $REPLY =~ ^[Yy]$ ]] && exit
 
-for file in $(grep -rl '/home/harman' "$HOME/.config/hypr" "$HOME/.config/waybar" "$HOME/.config/quickshell" 2>/dev/null); do
-  sed -i "s|/home/harman|$HOME|g" "$file"
+mkdir -p ~/.config ~/.local/bin ~/wallpapers
+
+backup=~/.dotfiles-backup-$(date +%s)
+mkdir -p "$backup"
+
+for dir in hypr kitty waybar quickshell swaync scripts wal templates fastfetch cava; do
+  [[ -e ~/.config/"$dir" ]] && mv ~/.config/"$dir" "$backup"/
+  [[ -d .config/"$dir" ]] && cp -r .config/"$dir" ~/.config/
 done
 
-echo
-echo "Install complete."
-echo "Backups (if any): $BACKUP_DIR"
-echo "Next: log out/in or restart Hyprland, then run: ~/.config/scripts/random-wallpaper.sh"
+[[ -e ~/.config/starship.toml ]] && mv ~/.config/starship.toml "$backup"/
+cp .config/starship.toml ~/.config/
+
+[[ -d wallpapers ]] && cp -n wallpapers/* ~/wallpapers/ 2>/dev/null
+
+echo '#!/bin/bash
+pkill quickshell; nohup quickshell &>/dev/null &' > ~/.local/bin/start-quickshell.sh
+chmod +x ~/.local/bin/start-quickshell.sh
+
+grep -rl '/home/harman' ~/.config/hypr ~/.config/waybar ~/.config/quickshell 2>/dev/null | xargs -r sed -i "s|/home/harman|$HOME|g"
+
+chmod +x ~/.config/scripts/* 2>/dev/null
+
+echo ""
+echo "done"
+echo "if stuff is broken run ./install.sh deps"
+echo "then log out, log in, run ~/.config/scripts/random-wallpaper.sh"
