@@ -3,7 +3,8 @@
 {
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
-        "source": "linux_small", //change to ~/.config/fastfetch/logo.txt to use custom ascii logo
+        "type": "command-raw",
+        "source": "pokemon-colorscripts-go --no-title",
         "padding": {
             "top": 2,
             "left": 2,
