@@ -14,7 +14,7 @@ install_deps() {
     paru -S --needed gpu-screen-recorder rmpc mpd-mpris quickshell-git
   else
     echo "no aur helper, skipping aur packages"
-    echo "run: yay -S gpu-screen-recorder rmpc mpd-mpris quickshell-git"
+    echo "run: yay -S gpu-screen-recorder rmpc mpd-mpris quickshell-git pokemon-colorscripts-go"
   fi
 
   sudo systemctl enable --now NetworkManager 2>/dev/null
